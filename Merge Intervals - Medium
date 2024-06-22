@@ -1,0 +1,55 @@
+Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.
+
+Example 1:
+
+Input: intervals = [[1,3],[2,6],[8,10],[15,18]]
+Output: [[1,6],[8,10],[15,18]]
+Explanation: Since intervals [1,3] and [2,6] overlap, merge them into [1,6].
+Example 2:
+
+Input: intervals = [[1,4],[4,5]]
+Output: [[1,5]]
+Explanation: Intervals [1,4] and [4,5] are considered overlapping.
+ 
+
+Constraints:
+
+1 <= intervals.length <= 104
+intervals[i].length == 2
+0 <= starti <= endi <= 104
+
+Code: Runtime 7ms | Beats 97.5% 
+class Solution {
+    public int[][] merge(int[][] intervals) {    
+        if (intervals.length < 1) return intervals; 
+
+        Arrays.sort(intervals, (arr1, arr2) -> Integer.compare(arr1[0], arr2[0]));
+        ArrayList<int[]> result = new ArrayList<>(); 
+        int[] curr = intervals[0];
+        result.add(curr);
+
+        for (int[] interval: intervals){
+            int indexBegin = interval[0];
+            int indexEnd = interval[1];
+            int currEnd = curr[1];
+            if (currEnd >= indexBegin){
+                curr[1] = Math.max(currEnd, indexEnd);
+            } else{
+                curr = interval;
+                result.add(curr);
+            }
+        }
+        return result.toArray(new int[result.size()][2]);
+    }
+}
+
+Code-Walkthrough/Explanation: 
+- Intially account for base case and return default array if nothing else is given 
+- Sort the input array so by the first index of each array
+- Create the result (that will later be converted back into a 2d array) 
+- Append the first row of the input array into the result (since Arrays are a reference data type this value can be changed later) 
+- Iterate through each interval in the input array whilst creating variables for the nessecary components 
+- Within the if statement we check if the intervals are actually overlapping by testing the upper half of the first array and the beginning of the next array 
+- In this case we append the highest value of the two intervals to the curr, which will be saved in the result list unless it needs to be updated again in the event of another overlap 
+- If there is no overlap then we simpy update curr to the current iteration of the intervals loop and append it to our output list
+- After the loop terminates we simply convert the ArrayList into the 2D array and return it
