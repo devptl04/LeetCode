@@ -1,0 +1,54 @@
+Given a binary tree, find the lowest common ancestor (LCA) of two given nodes in the tree.
+
+According to the definition of LCA on Wikipedia: “The lowest common ancestor is defined between two nodes p and q as the lowest node in T that has both p and q as descendants (where we allow a node to be a descendant of itself).”
+
+
+Example 1:
+Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+Output: 3
+Explanation: The LCA of nodes 5 and 1 is 3.
+
+Example 2:
+Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+Output: 5
+Explanation: The LCA of nodes 5 and 4 is 5, since a node can be a descendant of itself according to the LCA definition.
+
+Example 3:
+Input: root = [1,2], p = 1, q = 2
+Output: 1
+ 
+Constraints:
+The number of nodes in the tree is in the range [2, 105].
+-109 <= Node.val <= 109
+All Node.val are unique.
+p != q
+p and q will exist in the tree.
+
+
+Code: Runtime 6ms | Beats 100%
+class Solution {
+    private TreeNode result = null;
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        dfs(root, p, q);
+        return result; 
+    }
+
+    private boolean dfs(TreeNode root, TreeNode p, TreeNode q){
+        if (root == null) return false; 
+        boolean left = dfs(root.left, p, q);
+        boolean right= dfs(root.right, p, q);
+        boolean curr = root == p || root == q;
+        if (curr && left || curr && right || left && right){
+            result = root; 
+        }
+        return curr || left || right; 
+    }
+}
+
+Code-Walkthrough/Explanation: 
+- Similar to finding the lowest common ancestor of a binary search tree problem 
+- Here we use a DFS algorithm to traverse through the tree 
+- We use a recursive function that returns a boolean value so that we know where the input p & q values are located within the tree 
+- Due to the logic associated with recursion, we trickle up the tree each time the function is called where we ultimately check if both p & q have been found
+- Since it is possible for a node to be decedent of itself we initialize a curr variable to assess this scenario, so within the check statement if two of the three variables are true then we know that we have traversed the tree and found where both p and q are located
+- Since we trickle up, we know that the root of the current recursive method, where this condition is met, is the ancestor which we simply set to result 
