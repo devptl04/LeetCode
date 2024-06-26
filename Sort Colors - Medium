@@ -1,0 +1,46 @@
+Given an array nums with n objects colored red, white, or blue, sort them in place so that objects of the same color are adjacent, with the colors in the order red, white, and blue.
+We will use the integers 0, 1, and 2 to represent the colors red, white, and blue, respectively.
+You must solve this problem without using the library's sort function.
+
+Example 1:
+Input: nums = [2,0,2,1,1,0]
+Output: [0,0,1,1,2,2]
+
+Example 2:
+Input: nums = [2,0,1]
+Output: [0,1,2]
+ 
+Constraints:
+n == nums.length
+1 <= n <= 300
+nums[i] is either 0, 1, or 2.
+
+Code: 0ms | Beats 100%
+class Solution {
+    public void sortColors(int[] nums) {
+        if (nums.length == 1) return;
+        int index = 0; 
+        int start = 0; 
+        int last = nums.length -1;
+        while (index <= last){
+            if (nums[index] == 0){
+                nums[index] = nums[start];
+                nums[start] = 0;
+                start++; 
+                index++; 
+            }else if (nums[index] == 2){
+                nums[index] = nums[last];
+                nums[last] = 2;
+                last--;
+            }else {
+                index++; 
+            }
+        }
+    }
+}
+
+Code Walkthrough/Explanation: 
+- We are asked to sort the array by colors, in order to do this in a time-efficient manner we simply sort the 0s to the front and the 2s to the back, by doing so, the 1s automatically get sorted 
+- Initialize a start and end pointer for where we sort and we loop through the array until these conditions are met and then simply swap each value for one another
+- We move the start pointer along and the index pointer for a 0s swap but for the 2s swap we don't move the index as the value from the end of the array hasn't been sorted yet and would need sorting
+- As for the terminating condition of the loop, we optimize the runtime as we only need to iterate through the indexes of the array that aren't sorted meaning (start <= & <= last)
