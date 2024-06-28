@@ -1,0 +1,54 @@
+Given an integer array nums, return true if you can partition the array into two subsets such that the sum of the elements in both subsets is equal or false otherwise.
+
+Example 1:
+Input: nums = [1,5,11,5]
+Output: true
+Explanation: The array can be partitioned as [1, 5, 5] and [11].
+
+Example 2:
+Input: nums = [1,2,3,5]
+Output: false
+Explanation: The array cannot be partitioned into equal sum subsets.
+ 
+Constraints:
+1 <= nums.length <= 200
+1 <= nums[i] <= 100
+
+Code: 846ms | Beats 6% 
+class Solution {
+    public boolean canPartition(int[] nums) {
+        int total = 0;
+        for (int i : nums){
+            total += i; 
+        }
+        if (total % 2 != 0){
+            return false; 
+        }
+        return partition(nums, 0, 0, total, new HashMap<String, Boolean>());
+    }
+
+    public boolean partition(int[] nums, int index, int sum, int total, HashMap<String, Boolean> state){
+        String curr = index + "" + sum;
+        if (state.containsKey(curr)){
+            return state.get(curr);
+        }
+        if (sum * 2 == total){
+            return true; 
+        }
+        if (index >= nums.length || sum > total /2){return false;}
+        boolean result = partition(nums, index +1, sum, total, state) || partition(nums, index + 1, sum + nums[index], total, state);
+        state.put(curr, result);
+        return result; 
+    }
+}
+
+Code Walkthrough/Explanation: 
+-We initally calculate the total sum of all the numbers and if the total is odd then we know that there is no way to evenly parition the numbers so we return false
+-We call to a helper method that will ultimately do all the work and return if it's possible to evenly parition the array
+-Withint the recursive helper method we take in the original array, an index, a sum, and a Hashmap that stores the "state" of the current iteration in order to optimize the code 
+-Since we have a recursive call in the method, we want to make sure we don't repeat iterations that we have already done, so we concatenate the index and the sum and check if its in the hashmap
+-Then, since we know that the partition has to be equally divided between the sets the sum of each parition has to be equal to half of the total
+-After the conditional check we do boundary checks
+-We intialize a boolean variable that recurisvely calls back to the helper function (one inclusive & one exclusive) while adding to the index in both 
+-Following the recursion, we update the map, to prevent reiterations, and ultimately return the top result.
+-Time complexity would be O(n*m) n being the # indexes and m being the #of potential sums
