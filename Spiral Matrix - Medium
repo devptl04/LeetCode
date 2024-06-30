@@ -1,0 +1,46 @@
+Given an m x n matrix, return all elements of the matrix in spiral order.
+
+Example 1:
+Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+Output: [1,2,3,6,9,8,7,4,5]
+
+Code: 0ms | Beats 100%
+class Solution {
+    public List<Integer> spiralOrder(int[][] matrix) {
+        ArrayList<Integer> result = new ArrayList<>();
+        if (matrix == null || matrix.length == 0){
+            return result; 
+        }
+        int top = 0; 
+        int bottom = matrix.length - 1;
+        int right = matrix[0].length - 1; 
+        int left = 0; 
+        int size = matrix.length * matrix[0].length; 
+        while (result.size() < size){
+            for (int i = left; i <= right && result.size() < size; i++){
+                result.add(matrix[top][i]);
+            }
+            top++;
+            for (int i = top; i <= bottom && result.size() < size; i++){
+                result.add(matrix[i][right]);
+            }
+            right--; 
+            for (int i = right; i >= left && result.size() < size; i--){
+                result.add(matrix[bottom][i]);
+            }
+            bottom--;
+            for (int i = bottom; i >= top && result.size() < size; i--){
+                result.add(matrix[i][left]);
+            }
+            left++;
+        }   
+        return result;
+    }
+}
+
+Code Explanation: 
+- This is a pretty simple problem conceptually but it can be hard to implement the code for
+- Essentially we intialize a the result list and check boundary cases and intialize variables for the top,bottom,left, & right of the array 
+- Since we know that the size of the array can only be the size of the # of elements in the array we intialize a size variable and use it in the loop statement
+- We essentially create 4 loops asseses the traversal from the top to right, top to bottom, bottom to left, and bottom to top and iterate through this 
+- Within the loop conditions for each of these we have to recheck if the size is greater than that of the input array to ensure we don't overadd, since the size of the columns and rows can differ
