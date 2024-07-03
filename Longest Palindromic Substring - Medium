@@ -1,0 +1,60 @@
+Given a string s, return the longest palindromic substring in s.
+
+Example 1:
+Input: s = "babad"
+Output: "bab"
+Explanation: "aba" is also a valid answer.
+
+Example 2:
+Input: s = "cbbd"
+Output: "bb"
+ 
+Constraints:
+1 <= s.length <= 1000
+s consist of only digits and English letters.
+
+Code: 15ms | Beats 88.11%
+class Solution {
+    public String longestPalindrome(String s) {
+        if (s == null || s.length() < 1) return "";
+        int start = 0; 
+        int end = 0;
+        
+        for (int i = 0; i < s.length(); i++){
+            int len1 = palindrome(s, i, i);
+            int len2 = palindrome(s, i, i + 1);
+            int len = Math.max(len1, len2);
+            if (len > end - start){
+                start = i - ((len - 1) /2);
+                end = i + (len/2);
+            }
+        }
+
+        return s.substring(start, end + 1);
+    }
+
+    public int palindrome(String s, int left, int right){
+        if (s == null || left > right){
+            return 0;
+        }
+        while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)){
+            left--; 
+            right++; 
+        }
+        return right - left -1; 
+    }
+}
+
+Code Explanation: 
+- This problem can be solved in a multitude of different ways, but expanding from the middle is the most optimized solution with O(n^2) time complexity
+- We start this problem by checking the base case and initializing our index pointers, signifying where the start and end index of the longest palindrome is
+- We then iterate through each character in the string and call a helper method that expands from the middle
+- The helper method effectively starts in the middle and uses a left and right pointer to check the values at each index from the middle to check how long the palindrome is
+- We return right - left -1 in this helper method as the left and right are shifted by one more in the final iteration of the while loop, ultimately returning the total length of the longest palindrome from that starting point
+- When we call this helper method within the main for loop, we have to call it twice since there are two cases that are consistent with palindromes
+  - Racecar (when the middle index is the same for both) 
+  - aaabbaaa (when the string is even) 
+- After we call to this helper method, we check which one has a longer length and see if it is the longest substring that we currently have
+- If it is, then we have to reinitialize our start pointer to the start index, which we can calculate based on the length of one side of the palindrome and subtract it from i (the middle) & likewise, we add to i to calculate the end pointer. 
+- Lastly, once this main loop terminates, we have successfully found the longest palindrome and we simply return it using the substring function(* we add 1 to end bc this substring function is exclusive for the ending point) 
+- 
