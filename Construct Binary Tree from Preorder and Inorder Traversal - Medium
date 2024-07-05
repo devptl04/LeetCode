@@ -1,0 +1,52 @@
+Given two integer arrays preorder and inorder where preorder is the preorder traversal of a binary tree and inorder is the inorder traversal of the same tree, construct and return the binary tree.
+
+Example 1:
+Input: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+Output: [3,9,20,null,null,15,7]
+
+Example 2:
+Input: preorder = [-1], inorder = [-1]
+Output: [-1]
+ 
+Constraints:
+1 <= preorder.length <= 3000
+inorder.length == preorder.length
+-3000 <= preorder[i], inorder[i] <= 3000
+preorder and inorder consist of unique values.
+Each value of inorder also appears in preorder.
+preorder is guaranteed to be the preorder traversal of the tree.
+inorder is guaranteed to be the inorder traversal of the tree.
+
+Code: 3ms | Beats 42.07%
+class Solution {
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        return helper(preorder, inorder, 0, 0, inorder.length -1);
+    }
+
+    public TreeNode helper(int[] preorder, int[] inorder, int preStart, int inStart, int inEnd){
+        if (preStart > preorder.length -1 || inStart > inEnd){return null;}
+
+        TreeNode root = new TreeNode(preorder[preStart]);
+
+        int inIndex = 0; 
+        for (int i = inStart; i <= inEnd; i++){
+            if (root.val == inorder[i]){
+                inIndex = i; 
+            }
+        }
+
+        root.left = helper(preorder, inorder, preStart + 1, inStart, inIndex -1);
+        root.right = helper(preorder, inorder, preStart + inIndex - inStart + 1, inIndex +1, inEnd);
+
+        return root; 
+    }
+}
+
+Code Explanation: 
+- For this question we use a helper method that will be recursively called and return the root of this method \
+- This function takes in the preorder & inorder arrays, a start index for the preorder array, a start index for the inorder array, and an end index for the inorder array
+- We first check the base cases and return null for the boundary checks for the recursive calls
+- Since preorder is root, left, right, we know that the first index of the preorder array is the root so we initialize that 
+- After this we want to find its left and right children, which we can do by traversing through the inorder array to find where the root is located because inorder traversal is left, root,right, so we know that if we find the root we find its children (we find the index of the root using the for loop) 
+- After this, we set its left child with a recursive call to the helper method where we look at the left side of the inorder array to find its children & set the preOrder index + 1 since we know preorder goes root, left, right
+- The right child is a little bit more complicated because in order to set the preOrder index, we have to skip over all of the left subtrees. To do this we take the Inindex -inStart, which signifies the left side of the root for the inorder traversal and we add one to this to skip to the first node of the right side, & we set the inorder pointers to traverse through the right side 
