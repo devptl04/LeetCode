@@ -1,0 +1,62 @@
+Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
+A mapping of digits to letters (just like on the telephone buttons) is given below. Note that 1 does not map to any letters.
+
+Example 1:
+Input: digits = "23"
+Output: ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+
+Example 2:
+Input: digits = ""
+Output: []
+
+Example 3:
+Input: digits = "2"
+Output: ["a","b","c"]
+ 
+Constraints:
+0 <= digits.length <= 4
+digits[i] is a digit in the range ['2', '9'].
+
+Code: 1ms | Beats 66.07%
+class Solution {
+    public List<String> letterCombinations(String digits) {
+        Map<Character, List<Character>> map = new HashMap<>();
+        ArrayList<String> result = new ArrayList<>();
+        map.put('2', new ArrayList<>(Arrays.asList('a','b','c')));
+        map.put('3', new ArrayList<>(Arrays.asList('d','e','f')));
+        map.put('4', new ArrayList<>(Arrays.asList('g','h','i')));
+        map.put('5', new ArrayList<>(Arrays.asList('j','k','l')));
+        map.put('6', new ArrayList<>(Arrays.asList('m','n','o')));
+        map.put('7', new ArrayList<>(Arrays.asList('p','q','r','s')));
+        map.put('8', new ArrayList<>(Arrays.asList('t','u','v')));
+        map.put('9', new ArrayList<>(Arrays.asList('w','x','y','z')));
+        
+        if (digits.length() == 0) return result; 
+        
+        backtrack(digits.toCharArray(), result, map, 0, new StringBuilder());
+        
+        return result; 
+    }
+    
+    public void backtrack(char[] digits, ArrayList<String> result, Map<Character, List<Character>> map, int index, StringBuilder curr) {
+        if (curr.length() == digits.length) {
+            result.add(curr.toString());
+            return; 
+        }
+        
+        for (char c : map.get(digits[index])) {
+            curr.append(c);
+            backtrack(digits, result, map, index + 1, curr);
+            curr.deleteCharAt(curr.length() - 1);
+        }
+    }
+}
+
+Code Explanation: 
+- Since we are dealing with the # of combinations, we know that this is a backtracking problem 
+- We initialize a HashMap with the integer as the key and the letters associated with that integer as the List<Character> in the values for the Map
+- We check the base case for this problem and return an empty result list if this condition is met, and if not we call to a backtracking helper method
+- This method takes in the digits as a Char Array (just to make it easier to work with), the result list, the map we initialize, an index, and a StringBuilder that we will make our curr
+- The first check of the backtracking method is to see if the curr String is equal to the digits length, if it is then we know that this is a combination and can add it to our result list
+- Within the for loop we iterate through the digits and iterate the Char list, the value of the respective digit, the key, we are at within the map and add this character to our StringBuilder and call recursively to this backtracking method
+- Once this recursive call is passed, we simply remove the last character, in order to find all possible combinations
