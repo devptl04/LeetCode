@@ -1,0 +1,65 @@
+Given two strings s and p, return an array of all the start indices of p's anagrams in s. You may return the answer in any order.
+An Anagram is a word or phrase formed by rearranging the letters of a different word or phrase, typically using all the original letters exactly once.
+
+Example 1:
+Input: s = "cbaebabacd", p = "abc"
+Output: [0,6]
+Explanation:
+The substring with start index = 0 is "cba", which is an anagram of "abc".
+The substring with start index = 6 is "bac", which is an anagram of "abc".
+
+Example 2:
+Input: s = "abab", p = "ab"
+Output: [0,1,2]
+Explanation:
+The substring with start index = 0 is "ab", which is an anagram of "ab".
+The substring with start index = 1 is "ba", which is an anagram of "ab".
+The substring with start index = 2 is "ab", which is an anagram of "ab".
+
+Constraints:
+1 <= s.length, p.length <= 3 * 104
+s and p consist of lowercase English letters.
+
+Code: 10ms | Beats 78%
+class Solution {
+    public List<Integer> findAnagrams(String s, String p) {
+        ArrayList<Integer> result = new ArrayList<>();
+        if (s == null || s.length() == 0) return result;
+
+        int[] counts = new int[26];
+        for (int i = 0; i < p.length(); i++) {
+            counts[p.charAt(i) - 'a']++;
+        }
+
+        int right = 0; 
+        int left = 0; 
+        int counter = p.length();
+        
+        while (right < s.length()) {
+            if (counts[s.charAt(right++) - 'a']-- >= 1) {
+                counter--;
+            }
+            
+            if (counter == 0) {
+                result.add(left);
+            }
+            
+            if (right - left == p.length()) {
+                if (counts[s.charAt(left++) - 'a']++ >= 0) {
+                    counter++;
+                }
+            }
+        }
+        
+        return result;
+    }
+}
+
+Code Explanation:
+- First we intialize our return list and check base cases
+- Then we create a int array that will store the frequency of each character in the p string as a result of the for loop and ascii manipulation 
+- After this, we will create a sliding window algorithm and return the result, so we intialize a left and right pointer as well as a counter pointer that will tell us when to add to our result list
+- While the right pointer doesn't reach the end of the string, we check if the right pointer within the string is in the anagram we are looking for (while incrementing the right pointer and the frequency count accordinly) and we decrement the counter if this condition is met
+- Within the next if statement, if the counter is equal to 0 then we know that we have found an instance of an anagram, and can add the left pointer, the starting index, to the result list
+- Lastly, we check if the window is the size of the p string, if the left pointer is in the anagram, then we add to the counter as we are moving the sliding window down the string
+- Once this loop terminates, we have succesfully found all the anagrams within the string and their starting indexes 
