@@ -1,0 +1,69 @@
+You are given an array of CPU tasks, each represented by letters A to Z, and a cooling time, n. Each cycle or interval allows the completion of one task. Tasks can be completed in any order, but there's a constraint: identical tasks must be separated by at least n intervals due to cooling time.
+​Return the minimum number of intervals required to complete all tasks.
+
+Example 1:
+Input: tasks = ["A","A","A","B","B","B"], n = 2
+Output: 8
+Explanation: A possible sequence is: A -> B -> idle -> A -> B -> idle -> A -> B.
+After completing task A, you must wait two cycles before doing A again. The same applies to task B. In the 3rd interval, neither A nor B can be done, so you idle. By the 4th cycle, you can do A again as 2 intervals have passed.
+
+Example 2:
+Input: tasks = ["A","C","A","B","D","B"], n = 1
+Output: 6
+Explanation: A possible sequence is: A -> B -> C -> D -> A -> B.
+With a cooling interval of 1, you can repeat a task after just one other task.
+
+Example 3:
+Input: tasks = ["A","A","A", "B","B","B"], n = 3
+Output: 10
+Explanation: A possible sequence is: A -> B -> idle -> idle -> A -> B -> idle -> idle -> A -> B.
+There are only two types of tasks, A and B, which need to be separated by 3 intervals. This leads to idling twice between repetitions of these tasks.
+
+Constraints:
+1 <= tasks.length <= 104
+tasks[i] is an uppercase English letter.
+0 <= n <= 100
+
+Code: 28ms| Beats 36.70%
+class Solution {
+    public int leastInterval(char[] tasks, int n) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        for (char c: tasks){
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a,b) -> b - a);
+        maxHeap.addAll(map.values());
+
+        int cycles = 0; 
+        while (!maxHeap.isEmpty()){
+            List<Integer> temp = new ArrayList<>();
+            for (int i = 0; i < n + 1; i++){
+                if (!maxHeap.isEmpty()){
+                    temp.add(maxHeap.remove());
+                }
+            }
+
+            for (int i : temp){
+                if (--i > 0){
+                    maxHeap.add(i);
+                }
+            }
+
+            cycles += maxHeap.isEmpty() ? temp.size() : n + 1;
+        }
+        return cycles;
+    }
+}
+
+Code Explanation: 
+- For this problem, we first want to find the frequency of each character, so we can only perform one task of each character in one cycle
+- We use a HashMap and iterate through the tasks and add the frequency of each (map.getOrDefault creates a value of 0 if the key is not already present)
+- After this, we want to use a maxHeap since it would be most efficient to start the tasks with the highest frequency first since we can't have multiple of the same task running in the same cycle
+- Use initialize the priority queue and adjust the comparator to sort the values from high to low, and then add all the HashMap values to this
+- Within this while loop, we create a new List variable that will hold all the tasks that will be done in one cycle
+- We iterate through the maxHeap n+1 times since n is inclusive in this case, and add the values to this temp list accordingly
+- Once this loop terminates, our temp list holds the values of the n+1  characters with the highest remaining frequencies 
+- So, we iterate through this temp list and decrement the value (to account for the current cycle doing a task) and if this value is greater than 0, that means there are more of these in the scheduler, so we add it back to the maxHeap
+- After this terminates, we have to increment our cycle variable, which we initialized prior to the while loop, based on if there are any remaining tasks left in the scheduler
+- If the maxHeap is empty, meaning we have no tasks left to process, then we add the size of temp, standing for the #of tasks that were done in the current cycle to the cycles variable, otherwise, we default to n+1 and add that to cycle, since we either process n+1 tasks or had idle time to account for. 
