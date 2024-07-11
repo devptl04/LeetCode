@@ -1,0 +1,111 @@
+Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.
+
+Implement the LRUCache class:
+LRUCache(int capacity) Initialize the LRU cache with positive size capacity.
+int get(int key) Return the value of the key if the key exists, otherwise return -1.
+void put(int key, int value) Update the value of the key if the key exists. Otherwise, add the key-value pair to the cache. If the number of keys exceeds the capacity from this operation, evict the least recently used key.
+The functions get and put must each run in O(1) average time complexity.
+
+Example 1:
+Input
+["LRUCache", "put", "put", "get", "put", "get", "put", "get", "get", "get"]
+[[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]
+Output
+[null, null, null, 1, null, -1, null, -1, 3, 4]
+
+Explanation
+LRUCache lRUCache = new LRUCache(2);
+lRUCache.put(1, 1); // cache is {1=1}
+lRUCache.put(2, 2); // cache is {1=1, 2=2}
+lRUCache.get(1);    // return 1
+lRUCache.put(3, 3); // LRU key was 2, evicts key 2, cache is {1=1, 3=3}
+lRUCache.get(2);    // returns -1 (not found)
+lRUCache.put(4, 4); // LRU key was 1, evicts key 1, cache is {4=4, 3=3}
+lRUCache.get(1);    // return -1 (not found)
+lRUCache.get(3);    // return 3
+lRUCache.get(4);    // return 4
+ 
+Constraints:
+1 <= capacity <= 3000
+0 <= key <= 104
+0 <= value <= 105
+At most 2 * 105 calls will be made to get and put.
+
+Code: 45ms|Beats 69% 
+class LRUCache {
+    final Node head = new Node();
+    final Node tail = new Node();
+    int cache_cap; 
+    Map<Integer, Node> node_map;
+
+
+    public LRUCache(int capacity) {
+        node_map = new HashMap<>(capacity);
+        this.cache_cap = capacity;
+        head.next = tail;
+        tail.prev = head; 
+    }
+    
+    public int get(int key) {
+        int result = -1; 
+        Node curr = node_map.get(key);
+        if (curr != null){
+            result = curr.val; 
+            remove(curr);
+            add(curr);
+        }
+        return result; 
+    }
+    
+    public void put(int key, int value) {
+        Node node = node_map.get(key);
+        if (node != null){
+            node.val = value; 
+            remove(node);
+            add(node);
+        }else {
+            if (node_map.size() == cache_cap){
+                node_map.remove(tail.prev.key);
+                remove(tail.prev);
+            }
+            Node new_node = new Node();
+            new_node.key = key;
+            new_node.val = value; 
+
+            node_map.put(key, new_node);
+            add(new_node);
+        }
+    }
+
+    public void add(Node node){
+        Node head_next = head.next; 
+        head.next = node; 
+        node.prev = head; 
+        node.next = head_next;
+        head_next.prev = node; 
+    }
+
+    public void remove(Node node){
+        Node node_prev = node.prev; 
+        Node node_next = node.next;
+
+        node_prev.next = node_next;
+        node_next.prev = node_prev; 
+    }
+
+    class Node{
+        int val; 
+        int key; 
+        Node next;
+        Node prev; 
+    }
+}
+
+Code Explanation: 
+- In order to accomplish O(1) time complexity for this problem we utilize a doubly linked list along with a HashMap for efficient retrieval (we use a linked list here as we need to maintain the ordering) 
+- We initialize a class that takes in a val, key, and next pointer, and a previous pointer
+- We then initialize a variable that keeps track of the max capacity of our cache, the head and tail pointers for our linked list, and the hashmap that will store each node
+- From here, we add to helper methods (add and remove, which maintain the LinkedList)
+- Once we implement these functions, the get function checks if the key exists in the map, and if it does then it will return that key's value and then remove the node associated with that key from the linked list and add it again (ultimately putting it in the front of the list since it was most recently used) 
+- Lastly, for our put function, we check if the key is present within our hashmap, and if it is we simply change its value and do the same procedure of removing that node and adding it again
+- If the node is not already in the cache then we check if we are at capacity within the cache (if we are then we simply remove the last (least recently used element) and then we create a new node and append the key and value's to it accordingly and add it to the hashmap and the linked list
