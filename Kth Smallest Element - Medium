@@ -1,0 +1,43 @@
+Given the root of a binary search tree, and an integer k, return the kth smallest value (1-indexed) of all the values of the nodes in the tree.
+
+Example 1:
+Input: root = [3,1,4,null,2], k = 1
+Output: 1
+
+Example 2:
+Input: root = [5,3,6,2,4,null,null,1], k = 3
+Output: 3
+ 
+Constraints:
+The number of nodes in the tree is n.
+1 <= k <= n <= 104
+0 <= Node.val <= 104
+
+
+Code: 0ms | Beats 100%
+class Solution {
+    public int kthSmallest(TreeNode root, int k) {
+        int[] nums = new int[2];
+        inorder(root, k, nums);
+        return nums[1];
+    }
+
+    public void inorder(TreeNode root, int k, int[] nums){
+        if (root == null){
+            return; 
+        }
+
+        inorder(root.left, k, nums);
+        if (++nums[0] == k){
+            nums[1] = root.val;
+            return; 
+        }
+        inorder(root.right, k, nums);
+    }
+}
+
+Code Explanation: 
+- Since we are looking for the smallest elements, and we know that the tree is sorted with the lowest values on the left-hand side of the tree, we use an in-order traversal algorithm, which traverses the left, root, right nodes of the tree
+- We initialize an int[] array to keep track of which element we are at and the value of the smallest element so that we can return it, and then we call to this in order method that takes in the input tree, the kth element, and the array we just made
+- In this method, we traverse through the left side, and before the right side is traversed, we input the logic and increment the index of the array (since K is not 0 based) and if this number is equal to k, then we know that this is the kth smallest element and we add the current nodes value to the first index of the array and return this value
+- Otherwise, we then recursively call and traverse through the right side, until this logic ^ condition is met and return
