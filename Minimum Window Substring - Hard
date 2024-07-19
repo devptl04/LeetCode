@@ -1,0 +1,78 @@
+Given two strings s and t of lengths m and n respectively, return the minimum window 
+substring of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string "".
+
+The testcases will be generated such that the answer is unique.
+
+Example 1:
+Input: s = "ADOBECODEBANC", t = "ABC"
+Output: "BANC"
+Explanation: The minimum window substring "BANC" includes 'A', 'B', and 'C' from string t.
+
+Example 2:
+Input: s = "a", t = "a"
+Output: "a"
+Explanation: The entire string s is the minimum window.
+
+Example 3:
+Input: s = "a", t = "aa"
+Output: ""
+Explanation: Both 'a's from t must be included in the window.
+Since the largest window of s only has one 'a', return empty string.
+ 
+Constraints:
+m == s.length
+n == t.length
+1 <= m, n <= 105
+s and t consist of uppercase and lowercase English letters.
+ 
+Code: 2ms | Beats 99.8% | Time Complexity: O(m + n) | Space Complexity: O(1)
+class Solution {
+    public String minWindow(String s, String t) {
+        int[] count = new int[128];
+        for (char c: t.toCharArray()){
+            count[c]++;
+        }
+
+        int end = 0;
+        int start = 0;
+        int minStart = 0;
+        int minLen = Integer.MAX_VALUE;
+        int counter = t.length();
+        while (end < s.length()){
+            char curr = s.charAt(end);
+            if (count[curr] > 0){
+                counter--;
+            }
+            count[curr]--;
+            end++;
+
+            while (counter == 0){
+                if (end - start < minLen){
+                    minLen = end - start;
+                    minStart = start; 
+                }
+                char currStart = s.charAt(start);
+                count[currStart]++;
+                if (count[currStart] > 0){
+                    counter++;
+                }
+                start++; 
+            }
+        }
+
+        return minLen == Integer.MAX_VALUE ? "": s.substring(minStart, minStart + minLen);
+    }
+}
+
+Code Explanation: 
+- First, we start off by creating a frequency array that tells us how many of each character from the T string there are (set it to 128 since there's uppercase) 
+- Since this is a sliding window problem, we know that we need to use that algorithm and adjust to find the smallest window. In order to do this, we expand the window until our condition is met and then we contract it until that condition is no longer met and keep track of the smallest window we can make
+- We initialize a start and end pointer as well as a counter variable to keep track of how many remaining characters we have left to search through 
+- We also create a minStart variable and minLen variable for the instances of contracting the window 
+- In the loop, if the count of the current end character within the s string is above 0, meaning it's in the t string, we reduce the counter
+- We also decrement the frequency of that character no matter what it is and increment the end pointer
+- Now if the counter reaches 0, we have a while loop that keeps running until it no longer is 0 (this is where we do the contracting) 
+- Within this while loop, we check if the curr string is less than the previous and update the variables accordingly
+- Now, we want to move the start pointer, and if that element that we remove from the window is a part of the T string then we increment the counter and this loop terminates until its next instance 
+- After the main while loop terminates we have found the shortest substring and return accordingly (the substring function is exclusive, which is why adding minLen works) 
+
