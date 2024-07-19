@@ -1,0 +1,77 @@
+Serialization is the process of converting a data structure or object into a sequence of bits so that it can be stored in a file or memory buffer, or transmitted across a network connection link to be reconstructed later in the same or another computer environment.
+
+Design an algorithm to serialize and deserialize a binary tree. There is no restriction on how your serialization/deserialization algorithm should work. You just need to ensure that a binary tree can be serialized to a string and this string can be deserialized to the original tree structure.
+
+Clarification: The input/output format is the same as how LeetCode serializes a binary tree. You do not necessarily need to follow this format, so please be creative and come up with different approaches yourself.
+
+ 
+Example 1:
+Input: root = [1,2,3,null,null,4,5]
+Output: [1,2,3,null,null,4,5]
+
+Example 2:
+Input: root = []
+Output: []
+ 
+Constraints:
+
+The number of nodes in the tree is in the range [0, 104].
+-1000 <= Node.val <= 1000
+
+Code: 19ms | Beats 46% | Space & Time Complexity: O(N)
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        StringBuilder result = new StringBuilder();
+        if (root == null){
+            return result.toString();
+        }
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()){
+            TreeNode curr = queue.remove();
+            if (curr == null){
+                result.append("null ");
+                continue; 
+            }
+            result.append(curr.val + " ");
+            queue.add(curr.left);
+            queue.add(curr.right);
+        }
+        return result.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if (data.length() == 0 || data == ""){return null;}
+        String[] values = data.split(" ");
+        TreeNode root = new TreeNode(Integer.parseInt(values[0]));
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        for (int i = 1; i < values.length; i++){
+            TreeNode parent = queue.remove();
+            if (!values[i].equals("null")){
+                TreeNode left = new TreeNode(Integer.parseInt(values[i]));
+                parent.left = left;
+                queue.add(left);
+            }
+            if (!values[++i].equals("null")){
+                TreeNode right = new TreeNode(Integer.parseInt(values[i]));
+                parent.right = right; 
+                queue.add(right);
+            }
+        }
+        return root; 
+    } 
+}
+
+Code Explanation: 
+- For the serialized function, we do a Tree Level Order Traversal and add all the node values accordingly to a StringBuilder
+- Throughout this, we have to be sure to add the null children (so we can deserialize correctly) along with adding spaces so we can have a delimiter in the next function) 
+- In the deserialize function, we check the base case of the string and then delimit the data into a String array
+- Using this string array we, parse the String into an Integer and initialize the root as the first index of the values array
+- We then create a queue and add this root to it and create a for loop that iterates through the rest of the string values (starting at 1 bc of the root) 
+- Since we did a level order traversal in the serialize method, we know that the left branch will be first (if it's not null), so we create a left node, initialize it, link it to the parent, and add this left node to the queue
+- We now do the same for the right but we increment the i value since the right node is after the left and do the same steps
+- Once this loop terminates we have successfully added all the values from the String array into a binary tree and we simply return the root
