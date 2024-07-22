@@ -1,0 +1,72 @@
+A transformation sequence from word beginWord to word endWord using a dictionary wordList is a sequence of words beginWord -> s1 -> s2 -> ... -> sk such that:
+Every adjacent pair of words differs by a single letter.
+Every si for 1 <= i <= k is in wordList. Note that beginWord does not need to be in wordList.
+sk == endWord
+Given two words, beginWord and endWord, and a dictionary wordList, return the number of words in the shortest transformation sequence from beginWord to endWord, or 0 if no such sequence exists.
+
+Example 1:
+Input: beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]
+Output: 5
+Explanation: One shortest transformation sequence is "hit" -> "hot" -> "dot" -> "dog" -> cog", which is 5 words long.
+
+Example 2:
+Input: beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log"]
+Output: 0
+Explanation: The endWord "cog" is not in wordList, therefore there is no valid transformation sequence.
+ 
+Constraints:
+1 <= beginWord.length <= 10
+endWord.length == beginWord.length
+1 <= wordList.length <= 5000
+wordList[i].length == beginWord.length
+beginWord, endWord, and wordList[i] consist of lowercase English letters.
+beginWord != endWord
+All the words in wordList are unique.
+
+Code: 71ms | Beats 77.41% | Time & Space Complexity: O(N x M)
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        HashSet<String> set = new HashSet<>(wordList);
+        if (!set.contains(endWord)){
+            return 0; 
+        }
+        Queue<String> queue = new LinkedList<>();
+        int level = 1;
+        queue.offer(beginWord);
+
+        while (!queue.isEmpty()){
+            int size = queue.size();
+            for (int i = 0; i < size; i++){
+                String curr = queue.poll();
+                char[] curr_arr = curr.toCharArray();
+                for (int j = 0; j < curr_arr.length; j++){
+                    char now = curr_arr[j];
+                    for (char c = 'a'; c <= 'z'; c++){
+                        if (now == c){continue;}
+                        curr_arr[j] = c;
+                        String new_word = String.valueOf(curr_arr);
+                        if (new_word.equals(endWord)){return level + 1;}
+                        if (set.contains(new_word)){
+                            queue.offer(new_word);
+                            set.remove(new_word);
+                        }
+                    }
+                    curr_arr[j] = now; 
+                }
+            }
+            level++;
+        }
+        return 0;
+    }
+}
+
+Code Explanation: 
+- For this problem, we use BFS in order to find the most optimized transformation path to the endWord 
+- We start by moving the dictionary of Strings to a set, since a set operations have a better runtime, and we check if the endWord is in the set -> if not we simply return 0
+- Then we create our queue, which we will iterate through level by level, ensuring that we find the quickest path
+- We add begin word to the queue intialize level to 1
+- In the while loop, we iterate through the current queue, and create a char array for the prospective strings. We do this because we want to iterate through each character and in each string and modify its value to every letter in the alphabet and see if its a valid transformation either within our set or to the endWord. 
+- So, once we conver our queue String to a char array, we iterate through each char in the array, whilst creating a variable to store its original state, and we iterate through all 26 letters of the alphabet
+- If the letter is the same and the state we saved, we simply move on. Then we transform the current char to the new one and make this into a String. If this string is equal to the endWord we do an early exit and return the current level + 1 to account for the next transformation
+-Otherwise, if the new word is in the set, then we know that it's a valid transformation and add it to the queue and remove it from the set to avoid repeats
+- Every iteration, we increment level, and if this while loop terminates then we know that the transformation is not possible and return 0
