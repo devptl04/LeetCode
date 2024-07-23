@@ -1,0 +1,70 @@
+Given a string s representing a valid expression, implement a basic calculator to evaluate it, and return the result of the evaluation.
+Note: You are not allowed to use any built-in function which evaluates strings as mathematical expressions, such as eval().
+
+Example 1:
+Input: s = "1 + 1"
+Output: 2
+
+Example 2:
+Input: s = " 2-1 + 2 "
+Output: 3
+
+Example 3:
+Input: s = "(1+(4+5+2)-3)+(6+8)"
+Output: 23
+ 
+Constraints:
+1 <= s.length <= 3 * 105
+s consists of digits, '+', '-', '(', ')', and ' '.
+s represents a valid expression.
+'+' is not used as a unary operation (i.e., "+1" and "+(2 + 3)" is invalid).
+'-' could be used as a unary operation (i.e., "-1" and "-(2 + 3)" is valid).
+There will be no two consecutive operators in the input.
+Every number and running calculation will fit in a signed 32-bit integer.
+
+Code: 8ms | Beats 76.43% | Time 
+class Solution {
+    char[] arr;
+    int index = 0; 
+    public int calculate(String s) {
+        arr = s.toCharArray();
+        return dfs(); 
+    }
+
+    public int dfs(){
+        int sum = 0;
+        int operator = 1; 
+        while (index < arr.length){
+            if (arr[index] == ')'){
+                break;
+            }else if (arr[index] == '('){
+                index++;
+                sum += operator * dfs();
+            }else if (arr[index] == '-'){
+                operator = -1; 
+            }else if (arr[index] == '+'){
+                operator = 1; 
+            }else if (Character.isDigit(arr[index])){
+                StringBuilder num = new StringBuilder();
+                while (index < arr.length && Character.isDigit(arr[index])){
+                    num.append(arr[index++]);
+                }
+                index--;
+                sum += Integer.parseInt(num.toString()) * operator;
+            }
+            index++;
+        }
+        return sum;
+    }
+
+Code Explanation: 
+- For this question we use a depth first search algorithm as we need to solve the problem bracket by bracket
+- We intialize a char array and an index variable as class variables so that we have access to them in both methods
+- Within the main method, we intialize the string to a char array and simply return the dfs function, which will do all the heavy lifting 
+- The dfs function returns an int but has no parameters. We intialize a sum (which we will return) and an operator (so we know if its pos. or neg.) 
+- So while the index is less the char array's length, if the current character is a closing brace, then we simply terminate the loop (because it will return back to its main call in the recursive stack)
+- If its a new opening bracket, then we first increment the index (since we don't want to re-iterate for the current character) and add the operator times the dfs() call to sum 
+- This is where the main dfs is being used as we need to complete the operation in each bracket first and this would effectively solve that and return it back to us
+- If the character is +/-, we simply update the operator accordingly
+- Now if the character is a digit, then we have a while loop that keeps iterating and adding the character to a string, since we don't ever know how long a digit is and once this loop terminates we have to decrement index once because in order for the loop to terminate a false condition wouldh have to be met, meaning we need to iterate over that character in the next while loop iteration
+- After these loops run, we simply increment index, and when the while loop terminates, we have succesfully created a basic calculator!
