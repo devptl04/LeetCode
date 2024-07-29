@@ -1,0 +1,84 @@
+A tree is an undirected graph in which any two vertices are connected by exactly one path. In other words, any connected graph without simple cycles is a tree.
+Given a tree of n nodes labelled from 0 to n - 1, and an array of n - 1 edges where edges[i] = [ai, bi] indicates that there is an undirected edge between the two nodes ai and bi in the tree, you can choose any node of the tree as the root. When you select a node x as the root, the result tree has height h. Among all possible rooted trees, those with minimum height (i.e. min(h))  are called minimum height trees (MHTs).
+
+Return a list of all MHTs' root labels. You can return the answer in any order.
+The height of a rooted tree is the number of edges on the longest downward path between the root and a leaf.
+
+Example 1:
+Input: n = 4, edges = [[1,0],[1,2],[1,3]]
+Output: [1]
+Explanation: As shown, the height of the tree is 1 when the root is the node with label 1 which is the only MHT.
+
+Example 2:
+Input: n = 6, edges = [[3,0],[3,1],[3,2],[3,4],[5,4]]
+Output: [3,4]
+ 
+Constraints:
+1 <= n <= 2 * 104
+edges.length == n - 1
+0 <= ai, bi < n
+ai != bi
+All the pairs (ai, bi) are distinct.
+The given input is guaranteed to be a tree and there will be no repeated edges.
+
+Code: 15ms | Beats 91.45%
+class Solution {
+    public List<Integer> findMinHeightTrees(int n, int[][] edges) {
+        List<Integer> res = new ArrayList<>();
+        if (n <= 0) return res; 
+        if (n == 1){
+            res.add(0);
+            return res; 
+        }
+
+        int[] degree = new int[n];
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++){
+            adj.add(new ArrayList<>());
+        }
+
+        for (int[] e : edges){
+            degree[e[0]]++;
+            degree[e[1]]++;
+            adj.get(e[0]).add(e[1]);
+            adj.get(e[1]).add(e[0]);
+        }
+
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < n; i++){
+            if (degree[i] == 1){
+                queue.add(i);
+            }
+        }
+
+        while (n > 2){
+            int size = queue.size();
+            n -= size; 
+
+            while(size-- > 0){
+                int v = queue.poll();
+                for (int i : adj.get(v)){
+                    degree[i]--;
+                    if (degree[i] == 1){
+                        queue.add(i);
+                    }
+                }
+            }
+        }
+
+        res.addAll(queue);
+        return res;
+    }
+}
+
+Code Explanation: 
+- The logic for this problem is to calculate the degree (# of edges) for each node and keep trimming them until we find the centroid(the center connected nodes) of the graph 
+- We initialize the result array check base cases and return accordingly
+- After this, we initialize the degree array and the adjacency list/graph
+- We iterate through the edges 2d array, incrementing the respective degrees as we move on (note: the common convention is: that nodes are ordered 0 upwards), which is why we don't have indexing issues 
+- We also, add the adjacency list for each respective node
+- Once this is done, we initialize a queue and iterate through the degrees array, adding the nodes with a degree of 1 (meaning they are leaf nodes) to the queue
+- After this, in a while loop (while n > 2 since at most we can have two centroids in an undirected graph) we get the size of the current queue and decrement n by this
+- Iterating through the current queue, if iterate through each nodes neighbors, decrementing it by 1, and if this makes it a leaf node then we add it to the queue
+- This loop is essentially trimming the tree, until we find the heart of it (each time we trim, we are effectively traversing one layer up the tree to find the root(s))
+- Once the while loop terminates, we add the remaining value(s) to the result array we initialized earlier and return it
