@@ -1,0 +1,50 @@
+Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [1,1,1,2,2,3], k = 2
+Output: [1,2]
+Example 2:
+
+Input: nums = [1], k = 1
+Output: [1]
+ 
+
+Constraints:
+
+1 <= nums.length <= 105
+-104 <= nums[i] <= 104
+k is in the range [1, the number of unique elements in the array].
+It is guaranteed that the answer is unique.
+
+
+Code: 13ms | Beats 76.07% | Time Complexity: O(n log k) | Space Complexity: O(M) 
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (int num : nums) {
+            freq.put(num, freq.getOrDefault(num, 0) + 1);
+        }
+
+
+        PriorityQueue<Map.Entry<Integer, Integer>> maxHeap = new PriorityQueue<>((a,b) -> b.getValue() - a.getValue());
+        
+        maxHeap.addAll(freq.entrySet());
+
+        int[] result = new int[k];
+        for (int i = 0; i < k; i++) {
+            result[i] = maxHeap.poll().getKey();
+        }
+
+        return result;
+    }
+}
+
+Code Explanation: 
+- We want to find the frequency of each number within the array, so we iterate through and add the frequency to the value of each number within a HashMap
+- We then we want essentially use a maxHeap, based off the hashmap values (the frequencies), to append to our result array
+- In order to do this, we create a maxHeap that takes in a whole map entry and sort it based off the map.value 
+- We then add all our values from the hashmap to our maxHeap and iterate from 0 to k adding to our result array by removing the head of the maxHeap at each instance
+- This will effectively give us our answer in o(n log k) time
