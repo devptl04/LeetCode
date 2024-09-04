@@ -1,0 +1,55 @@
+Koko loves to eat bananas. There are n piles of bananas, the ith pile has piles[i] bananas. The guards have gone and will come back in h hours. Koko can decide her bananas-per-hour eating speed of k. Each hour, she chooses some pile of bananas and eats k bananas from that pile. If the pile has less than k bananas, she eats all of them instead and will not eat any more bananas during this hour. Koko likes to eat slowly but still wants to finish eating all the bananas before the guards return. Return the minimum integer k such that she can eat all the bananas within h hours.
+
+Example 1:
+Input: piles = [3,6,7,11], h = 8
+Output: 4
+
+Example 2:
+Input: piles = [30,11,23,4,20], h = 5
+Output: 30
+
+Example 3:
+Input: piles = [30,11,23,4,20], h = 6
+Output: 23
+ 
+Constraints:
+
+1 <= piles.length <= 104
+piles.length <= h <= 109
+1 <= piles[i] <= 109
+
+Code Explanation: 8ms | Beats 89.67% | Time Complexity: O(n log k)
+class Solution {
+    public int minEatingSpeed(int[] piles, int h) {
+        int left = 1;
+        int right = Arrays.stream(piles).max().getAsInt();
+        while (left < right){
+            int mid = left + (right - left) /2;
+            if (canEat(piles, mid, h)){
+                right = mid;
+            }else {
+                left = mid + 1;
+            }
+        }
+
+        return left; 
+    }
+
+    public boolean canEat(int[] piles, int k, int h){
+        int hours = 0;
+        for (int pile : piles){
+            hours += (pile + k - 1)/k;
+        }
+        return hours <= h; 
+    }
+}
+
+Code explanation: 
+- For this problem, we want to do a binary search between the value 1 and the max value that is within the piles array 
+- We do this to find the most suitable k value in the most time-efficient manner
+- We initialize our counter variables (left and right) and we loop until left is >= right
+- We then calculate the midpoint and put it into a helper method, a method that return true if the current k value can be done in less time than h hours, if so then we know that we can find the smallest k value, so we decrement the right pointer to the midpoint
+- Otherwise, we know that we need a higher k value and we increment left to mid + 1
+- Once this loop terminates, our left pointer is equal to the lowest possible k value and we return 
+- Within the helper method, we initialize a hour variable and loop through the piles array, adding the hours by dividing the current pile by k (but adding k -1) to ensure that it does ceiling division and truncates upwards
+- Lastly, we simply return if the hour is <= h hours 
