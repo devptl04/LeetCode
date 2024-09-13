@@ -1,0 +1,77 @@
+Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2.
+
+You have the following three operations permitted on a word:
+
+Insert a character
+Delete a character
+Replace a character
+ 
+Example 1:
+Input: word1 = "horse", word2 = "ros"
+Output: 3
+Explanation: 
+horse -> rorse (replace 'h' with 'r')
+rorse -> rose (remove 'r')
+rose -> ros (remove 'e')
+
+Example 2:
+Input: word1 = "intention", word2 = "execution"
+Output: 5
+Explanation: 
+intention -> inention (remove 't')
+inention -> enention (replace 'i' with 'e')
+enention -> exention (replace 'n' with 'x')
+exention -> exection (replace 'n' with 'c')
+exection -> execution (insert 'u')
+ 
+
+Constraints:
+
+0 <= word1.length, word2.length <= 500
+word1 and word2 consist of lowercase English letters.
+
+
+Code: 4ms | Beats 75% | Time Complexity: O(n * m)
+class Solution {
+    public int minDistance(String word1, String word2) {
+        char[] s1 = word1.toCharArray();
+        char[] s2 = word2.toCharArray();
+        int m = word1.length(); 
+        int n = word2.length(); 
+        int[][] dp = new int[n + 1][m + 1]; 
+
+
+        for (int i = 0; i < m + 1; i++){
+            dp[0][i] = i;  
+        }
+
+    
+        for (int j = 0; j < n + 1; j++){
+            dp[j][0] = j;  
+        }
+
+       
+        for (int i = 1; i < n + 1; i++) {
+            for (int j = 1; j < m + 1; j++) {
+                if (s2[i - 1] == s1[j - 1]) {  
+                    dp[i][j] = dp[i - 1][j - 1]; 
+                } else {
+                    int replace = dp[i - 1][j - 1]; 
+                    int insert = dp[i - 1][j];      
+                    int delete = dp[i][j - 1];       
+                    dp[i][j] = Math.min(Math.min(delete, insert), replace) + 1;  
+                }
+            }
+        }
+
+        return dp[n][m]; 
+    }
+}
+
+Code Explanation: 
+- The main concept here is that we need to create a table essentially with word1 along the x-axis and word2 along the y-axis and each cell is the number of operations it takes to go from the corresponding word1 to word2 
+- We initialize this array to have an extra row and column for the empty strings or (base cases) and we can use as we split this problem into subproblems
+- We then check to see if the current character in word1 is equal to the current character in word2 (we do -1 bc our for loop is based off your 2d array that has an extra row), and if this value is equal then we know that we can just change it to the value of the previous characters that were being compared which would be the top left corner of the table
+-Otherwise, if they are not equal, there are 3 operations we have to evaluate for, first if we replace then we get the previous # of operations of when the word was one less, if we delete then we get the # of operations for when the word1 was one less but word2 was still the same, and when we add a word we move one up and see because this is how many it took for the word to get to the current value of word2 previously
+- So we are essentially check all the neighbors of the current cell and finding the min value and adding 1 to it to account for the new operation
+- Once this loop terminates then we know that we've found the best way to make word1 into word2
