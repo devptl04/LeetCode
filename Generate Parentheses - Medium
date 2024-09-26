@@ -1,0 +1,36 @@
+Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+
+Example 1:
+Input: n = 3
+Output: ["((()))","(()())","(())()","()(())","()()()"]
+
+Example 2:
+Input: n = 1
+Output: ["()"]
+ 
+Constraints:
+1 <= n <= 8
+
+Code: 2ms | Beats 55% | Time Complexity: O(2^n)
+class Solution {
+    public List<String> generateParenthesis(int n) {
+        List<String> result = new ArrayList<>();
+        backtrack(result, "", 0, 0, n);
+        return result; 
+    }
+    public void backtrack(List<String> result, String curr, int open, int close, int max){
+        if (curr.length() == max * 2){
+            result.add(curr);
+            return;
+        }
+        if (open < max) backtrack(result, curr + "(", open + 1, close, max);
+        if (close < open) backtrack(result, curr + ")", open, close + 1, max);
+    }
+}
+
+Code Explanation: 
+- For this problem, there are a multitude of different ways to solve it but I chose to backtrack
+- We use a helper method and recursively call back to it and append when the base case is met 
+- The key here is that with each call, backtracking is a decision that needs to be made here (either add open or closing parentheses)
+- We create an open and close pointer to keep track of when it's appropriate to add the corresponding open or close parentheses since open can't have more than the max pair of instances and close needs to be aligned with open to uphold the integrity of the string
+- The main thing for this is problem is that instead of typical backtracking problems where we remove the last character is that since we are using a String and adding to it, each recursive call is its own String since Strings are immutable so it technically will check all possibilities but without using a StringBuilder
