@@ -1,0 +1,73 @@
+You are given the head of a singly linked-list. The list can be represented as:
+
+L0 → L1 → … → Ln - 1 → Ln
+Reorder the list to be on the following form:
+
+L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
+You may not modify the values in the list's nodes. Only nodes themselves may be changed.
+
+ 
+Example 1:
+
+
+Input: head = [1,2,3,4]
+Output: [1,4,2,3]
+Example 2:
+
+
+Input: head = [1,2,3,4,5]
+Output: [1,5,2,4,3]
+ 
+
+Constraints:
+
+The number of nodes in the list is in the range [1, 5 * 104].
+1 <= Node.val <= 1000
+
+
+Code: 1ms | Beats 99% | Time Complexity: O(n) | Space Complexity: 0(1)
+class Solution {
+    public void reorderList(ListNode head) {
+        if (head == null || head.next == null) return; 
+
+        ListNode slow = head; 
+        ListNode fast = head; 
+        while (fast != null && fast.next != null){
+            slow = slow.next; 
+            fast = fast.next.next; 
+        }
+
+        ListNode prev = null;
+        ListNode curr = slow; 
+        while (curr != null){
+            ListNode next = curr.next; 
+            curr.next = prev; 
+            prev = curr;
+            curr = next; 
+        }
+
+        ListNode first = head; 
+        ListNode second = prev; 
+        while (second.next != null){
+            ListNode temp1 = first.next;
+            ListNode temp2 = second.next; 
+
+            first.next = second;
+            second.next = temp1; 
+
+            first = temp1;
+            second = temp2; 
+        }
+    }
+}
+
+Code Explanation: 
+- The thought process here is to essentially find the middle of the list and reverse the second half of the list and merge it with the first half
+- If we reverse the second half then we can interleave it with the first half whilst iterating through it quite easily
+- To find the middle of the list, we use a fast and slow pointer, where slow will equal the middle of the list 
+- We then reverse the list, giving as prev as the head of the reversed list 
+- Finally, we want to interleave/merge the reversed list with the first half of the list, so we create two variables, one for the first half and one for the second 
+- We iterate while the second half of the list is not null and create temporary variables to hold the next point for each list
+- We then append the first half of the list to the second and then the next node in the second back to the first's next node
+- After this we move both the first and second pointers to their respective next nodes and continue the process
+- After this loop terminates, we have succesfully created the pattern as mentioned
