@@ -1,0 +1,59 @@
+You are given a list of airline tickets where tickets[i] = [fromi, toi] represent the departure and the arrival airports of one flight. Reconstruct the itinerary in order and return it.
+All of the tickets belong to a man who departs from "JFK", thus, the itinerary must begin with "JFK". If there are multiple valid itineraries, you should return the itinerary that has the smallest lexical order when read as a single string.
+
+For example, the itinerary ["JFK", "LGA"] has a smaller lexical order than ["JFK", "LGB"].
+You may assume all tickets form at least one valid itinerary. You must use all the tickets once and only once.
+
+Example 1:
+Input: tickets = [["MUC","LHR"],["JFK","MUC"],["SFO","SJC"],["LHR","SFO"]]
+Output: ["JFK","MUC","LHR","SFO","SJC"]
+
+Example 2:
+Input: tickets = [["JFK","SFO"],["JFK","ATL"],["SFO","ATL"],["ATL","JFK"],["ATL","SFO"]]
+Output: ["JFK","ATL","JFK","SFO","ATL","SFO"]
+Explanation: Another possible reconstruction is ["JFK","SFO","ATL","JFK","ATL","SFO"] but it is larger in lexical order.
+ 
+Constraints:
+1 <= tickets.length <= 300
+tickets[i].length == 2
+fromi.length == 3
+to.length == 3
+
+Code: Beats 99% Time Complexity: O(n log n) 
+lass Solution {
+    public List<String> findItinerary(List<List<String>> tickets) {
+        Map<String, PriorityQueue<String>> graph = new HashMap<>();
+
+        for (List<String> ticket: tickets){
+            graph.putIfAbsent(ticket.get(0), new PriorityQueue<>());
+            graph.get(ticket.get(0)).add(ticket.get(1));
+        }
+
+        LinkedList<String> itinerary = new LinkedList<>();
+        dfs ("JFK", graph, itinerary); 
+
+        return itinerary; 
+    }
+
+    public void dfs(String airport, Map<String, PriorityQueue<String>> graph, LinkedList<String> itinerary){
+        PriorityQueue<String> nextAirports = graph.get(airport);
+        while (nextAirports != null && !nextAirports.isEmpty()){
+            dfs(nextAirports.poll(), graph, itinerary);
+        }
+        itinerary.addFirst(airport);
+    }
+
+}
+
+Code Explanation: 
+- This problem utilizes Hierholzer's algorithm, which helps us find the Eulerian (traverse each edge once) path within a graph
+- Since we are going in order of lexical order, we create the Map with a minHeap is the value to sort all the possible destinations of a given node in this order
+- We create the graph, and then create the result as a LinkedList because within the dfs function, we will add to the front of the list 
+- We call to this DFS function that recursively goes through all of the destinations of a current flight until it gets to a layer where there are no more flights that can be taken
+- Once we reach this layer, we add to the beginning of the list and the reason we do this is because are backtrackign up the recursive call stack 
+- Ex. say we have [JFK, ATL], [ATL, SFO] 
+- We call to JFK's neighbor (ATL) and run DFS -> Now we call to ATL's neighbor SFO and run DFS --> SFO has no neighbors so we add it to the list
+- The itinerary list is [SFO] 
+- Now this returns back to the ATL call stack, where the while loop finishes and so we add ATL so the list is not [ATL, SFO] since we add to the front 
+- Then we return to the top call stack and add JFK, so the itinerary becomes [JFK, ATL, SFO], which is the correct answer
+- We traverse all the nodes of the graph once, which is O(n) but since we are sorting using a minHeap for each node, our time complexity is O(n Log n) 
