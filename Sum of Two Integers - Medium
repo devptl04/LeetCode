@@ -1,0 +1,36 @@
+Given two integers a and b, return the sum of the two integers without using the operators + and -.
+
+
+Example 1:
+Input: a = 1, b = 2
+Output: 3
+
+Example 2:
+Input: a = 2, b = 3
+Output: 5
+ 
+Constraints:
+-1000 <= a, b <= 1000
+
+Code: Beats 100% Time Complexity: O(1) 
+class Solution {
+    public int getSum(int a, int b) {
+        while (b != 0){
+            int sum = a ^ b;
+            int carry = (a & b) << 1; 
+
+            a = sum; 
+            b = carry; 
+        }
+
+        return a; 
+    }
+}
+
+Code Explanation: 
+- In order to solve this problem without adding and subtracting, we utilize bit-wise operators
+- A and B become placeholder variables where A becomes equal to the current sum and B is equal to the carry value from the previous addition operation that we have to add back the the sum we found 
+- We first get the sum by doing XOR which will give us the sum but not the carry
+- In order to account for the carry, we have to check to see if the binary value matches 1 and 1 somewhere, meaning we have a carry, and then shift it left by 1 to move it to the next carry position (how we would in normal math) 
+- Once we do this, we run the loop until we don't have a carry value left and return
+- The reason this runs in constant time is that we can have at most 32 bits since it's an integer, and since this is defined, we have constant time 
