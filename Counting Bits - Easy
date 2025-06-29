@@ -1,0 +1,27 @@
+Given an integer n, return an array ans of length n + 1 such that for each i (0 <= i <= n), ans[i] is the number of 1's in the binary representation of i.
+
+Example 1:
+Input: n = 2
+Output: [0,1,1]
+Explanation:
+0 --> 0
+1 --> 1
+2 --> 10
+
+Code: Beats 100% Time Complexity: O(n)
+class Solution {
+    public int[] countBits(int n) {
+        int[] result = new int[n + 1];
+
+        for (int i = 1; i <= n; i++){
+            result[i] = result[i >> 1] + (i & 1);
+        }
+
+        return result;
+    }
+}
+
+Code Explanation: 
+- For this problem, we utilize Dynamic Programming, by first initializing the results array (it's n+1 because n is inclusive here) 
+- We then iterate through starting at 1 (because the bit count of 0 will always be 0), and we essentially divide i by 2 (performing a right shift to remove the LSB), which tells us the previous number of 1s: ex. i = 4 = 100 -> 10 = 2 so we access result[2] = 1 + (100 & 1) = 0 so result[4] = 0, i = 5 = 101 --> 10 = 2 + (101 & 1) = 1 + 2 = 3 -> result[5] = 3 
+- We then add 1 or 0 depending on whether the LSB of the current number is even or odd 
