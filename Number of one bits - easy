@@ -1,0 +1,29 @@
+Given a positive integer n, write a function that returns the number of set bits in its binary representation (also known as the Hamming weight).
+
+Example 1:
+Input: n = 11
+Output: 3
+Explanation:
+The input binary string 1011 has a total of three set bits.
+
+Constraints:
+1 <= n <= 231 - 1
+
+Code: Beats 100% Time Complexity: O(1) 
+class Solution {
+    public int hammingWeight(int n) {
+        int count = 0;
+        while (n > 0){
+            count += n & 1; 
+            n >>>= 1; 
+        }
+        return count; 
+    }
+}
+
+Code Explanation: 
+- We are essentially checking for the amount of 1s in the binary representation of the number, so we check the LSB with 1 using bitwise AND 
+- The reason this only checks the LSB is because 1 would be represented as 000000001, so all the other values would inherently be 0 anyways 
+- We need perform an unsigned right shift, moving the values to the right by 1 (effectively getting rid of the LSB just calcualated) 
+- Then we can just return and the time complexity is O(1) because an int is at most 32 bits, which is defined
+ 
