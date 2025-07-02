@@ -1,0 +1,49 @@
+Given a signed 32-bit integer x, return x with its digits reversed. If reversing x causes the value to go outside the signed 32-bit integer range [-231, 231 - 1], then return 0.
+
+Assume the environment does not allow you to store 64-bit integers (signed or unsigned).
+
+Example 1:
+Input: x = 123
+Output: 321
+
+Example 2:
+Input: x = -123
+Output: -321
+
+Example 3:
+Input: x = 120
+Output: 21
+ 
+Constraints:
+-231 <= x <= 231 - 1
+
+Code: Beats 82.37% Time Complexity: O(n)
+class Solution {
+    public int reverse(int x) {
+        int reversed = 0;
+
+        while (x != 0){
+            int digit = x % 10;
+            if (reversed > Integer.MAX_VALUE/10 || (reversed == Integer.MAX_VALUE && digit > 7)){
+                return 0;
+            }
+            if (reversed < Integer.MIN_VALUE/10 || (reversed == Integer.MIN_VALUE && digit < -8)){
+                return 0; 
+            }
+
+            reversed = reversed * 10 + digit; 
+            x /= 10; 
+        }
+
+        return reversed; 
+    }
+}
+
+Code Explanation: 
+- For this problem, we essentially just to want to get the last digit of the integer and add it to the front of the reversed number and move down accordingly (ex. 321 -> 1. 1 --> 12 --> 123) because we multiply by 10 each time to add the nmber accordingly 
+- We loop through every digit in X and do this but also have to check for out of bound cases. We aren't told if the number is pos. or neg. so we have to check if its overflowing on both sides
+- First we check if the current result (wihtout adding the current digit being processed) is greater than the max MIN/MAX value when its moved back one place (to essentially check if adding the current digit being processed will go over) so if the reversed number meets this check then we know it is impossible to add another number wihtout it overflowing 
+- We also have to check for the case where the numbers are equal. In that case we can add a limited amount of numbers without over flow. The last digit of MAX is 7 so the digit cannot be above that and the last digit of MIN is 8, so the digit cannot be less than that
+- Keep in mind that when we do digit = x % 10, this accounts for the sign as well (ex. -321 % 10 = -1) so this negative check is done with -8. 
+- After this check, we move one tenth place my multiplying by 10 and then add the digit and divide by 10 for the integer so get to the next digit to process
+- This gives us a O(n) time complexity since we are iterating through every digit of the integer
