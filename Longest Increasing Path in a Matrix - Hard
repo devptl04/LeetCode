@@ -1,0 +1,66 @@
+Given an m x n integers matrix, return the length of the longest increasing path in matrix.
+From each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary (i.e., wrap-around is not allowed).
+
+Example 1:
+Input: matrix = [[9,9,4],[6,6,8],[2,1,1]]
+Output: 4
+Explanation: The longest increasing path is [1, 2, 6, 9].
+
+Example 2:
+Input: matrix = [[3,4,5],[3,2,6],[2,2,1]]
+Output: 4
+Explanation: The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.
+
+Example 3:
+Input: matrix = [[1]]
+Output: 1
+ 
+Constraints:
+m == matrix.length
+n == matrix[i].length
+1 <= m, n <= 200
+0 <= matrix[i][j] <= 231 - 1
+
+
+Code: Beats 52.47% Time Complexity: O(m * n) 
+class Solution {
+    public int longestIncreasingPath(int[][] matrix) {
+        int[][] directions = {{0,1}, {-1, 0}, {0, -1}, {1,0}};
+        int m = matrix.length; 
+        int n = matrix[0].length;
+        int[][] memo = new int[m][n];
+
+        int result = 0;
+        for (int i = 0; i < m; i++){
+            for (int j = 0; j < n; j++){
+                result = Math.max(result, dfs(i, j, directions, memo, matrix));
+            }
+        }
+
+        return result; 
+    }
+
+    public int dfs(int i, int j, int[][] directions, int[][] memo, int[][] matrix){
+        if (memo[i][j] != 0) return memo[i][j];
+
+        int maxLen =1; 
+        for (int[] dir: directions){
+            int newR = i + dir[0];
+            int newC = j + dir[1]; 
+            if (newR >= 0 && newC >= 0 && newR < matrix.length && newC < matrix[0].length && matrix[i][j] < matrix[newR][newC]){
+                maxLen = Math.max(maxLen, dfs(newR, newC, directions, memo, matrix) + 1);
+            }
+        }
+
+        memo[i][j] = maxLen; 
+        return maxLen; 
+    }
+}
+
+- For this problem, we want to find the longest path of increasing numbers 4 directionally. in order to do this, we must go through each cell and try to create its longest path and then return the longest length found. In order to make this more efficient, we can save previously calculated lengths of cells that have been visited via memoization 
+- We need to check each cell in 4 directions, so we initialize a directions array
+- We also create a memoization array that will hold previously calculated values, and then we iterate through each cell and call DFS to find its longest path and append to the result accordingly 
+- In the dfs, we first check if the current cell has been previously calculated (the minValue all previously calculated cells can have is 1 since it includes itself in the path), so we check if the value is not 0 for this case 
+- We then create a variable to keep track of its length and iterate through 4 directionally and check if the new value is within the bounds of the array and greater than the current cell being processed, if so then we call DFS on the new cell value and add 1 to account for this being a new cell added to the path. We append this to the maxLen accordingly
+- Once this has been processed, we have finished processing the current cell and can add it to the memoization array accordingly and return the maxLen back up the call stack 
+- This runs in 0(n*m) because we iterate through each cell once and process it
