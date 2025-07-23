@@ -1,0 +1,49 @@
+Given two strings s1 and s2, return true if s2 contains a permutation of s1, or false otherwise.
+In other words, return true if one of s1's permutations is the substring of s2.
+
+Example 1:
+Input: s1 = "ab", s2 = "eidbaooo"
+Output: true
+Explanation: s2 contains one permutation of s1 ("ba").
+
+Example 2:
+Input: s1 = "ab", s2 = "eidboaoo"
+Output: false
+ 
+Constraints:
+1 <= s1.length, s2.length <= 104
+s1 and s2 consist of lowercase English letters.
+
+
+Code: Beats 60.5% Time Complexity: O(n)
+class Solution {
+    public boolean checkInclusion(String s1, String s2) {
+        if (s1.length() > s2.length()) return false;
+
+        int[] one = new int[26];
+        int[] two = new int[26];
+
+        for (int i = 0; i < s1.length(); i++){
+            one[s1.charAt(i) - 'a']++;
+            two[s2.charAt(i) - 'a']++;
+        }
+
+        for (int i = s1.length(); i < s2.length(); i++){
+            if (Arrays.equals(one, two)){
+                return true;
+            }
+
+            two[s2.charAt(i) - 'a']++;
+            two[s2.charAt(i - s1.length()) - 'a']--;
+        }
+
+        return Arrays.equals(one, two);
+    }
+}
+
+Code Explanation: 
+- This problem is asking us to see if we can find any order of s1 within s2. To do this, we utilize a two pointer strategy in essence by getting the intialize frequency of characters of s2, comparing it to s1, and incrementing its frequency array one more character whilst removing one from the front
+- First, we check a base case, and then we create the frequency arrays respectively and fill them up to s1.lenght(). The reason we do this is because the permutation of s1 is always going to be the same length, so we only want to s1.lenght() characters in the frequency array for s2 at all times
+- We then iterate through the rest of s2, checking if the frequency arrays match respectively. If not, then we add the current character, and since the length has to always be the same as s1, we remove a character from the front
+- Once this loop terminates, we still have to check if the freq arrays match for the case where we the last character is added, since the loop condition would no longer be met and wouldn't check
+- This runs is linear time because we iterate through the s2 string. 
