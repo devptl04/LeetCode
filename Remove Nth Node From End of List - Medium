@@ -40,10 +40,9 @@ public ListNode removeNthFromEnd(ListNode head, int n) {
     }
 }
 
-Code Explanation: 
-- The intuition here is two use two pointers so that we only iterate through the list once and not have to do it twice
-- We start by creating a dummy node, in order to handle edge cases when they occur, and intiliaze the head of the dummy to point to the start the linked list
-- We then intialize our pointers to point to this dummy node 
-- Now the logic here is that we want to move the fast pointer N nodes ahead of the slow, so when the fast pointer reaches the end of the list we know that the slow pointer is right before the nTh to last node
-- Now since we initialized the pointers to be a pointer to the head, we have to iterate n + 1 times so that fast is in the correct position
-- Once this is done, we simply iterate both through the list until fast reaches the end and then we adjust slow.next to skip the next node and return the head of the list
+Code Explanation:
+- For this problem, we want to remove the Nth node from the end of the list. In order to do this in the most optimal time, we want to just run through the linked list once. We utilize a two-pointer approach to do this. 
+- We initialize a dummy pointer, which we can return at the end for the list. (We do this to handle edge cases like instances where we remove the first node in the list, where we would then not be able to just return head.next) 
+- We then create a fast and slow pointer, and we increment the fast pointer n+1 spots. We do this because we want the slow pointer to be a spot behind the actual node we want to remove, so we can effectively skip over it
+- Once we do this, we increment both the slow and fast pointers until fast reaches the end of the list. Once it does, we know slow is at the node right before removal, and we skip over the next node accordingly. 
+- We utilize our dummy node that we created and return
