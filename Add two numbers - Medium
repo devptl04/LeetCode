@@ -1,0 +1,51 @@
+You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list. You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+
+Example 1:
+Input: l1 = [2,4,3], l2 = [5,6,4]
+Output: [7,0,8]
+Explanation: 342 + 465 = 807.
+
+Example 2:
+Input: l1 = [0], l2 = [0]
+Output: [0]
+
+Constraints:
+
+The number of nodes in each linked list is in the range [1, 100].
+0 <= Node.val <= 9
+It is guaranteed that the list represents a number that does not have leading zeros.
+
+Code: Beats 100% Time Complexity: O(n) 
+class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode head = new ListNode(0);
+        ListNode curr = head; 
+        int carry = 0; 
+
+        while (l1 != null || l2 != null || carry != 0){
+            int sum = carry; 
+            if (l1 != null){
+                sum += l1.val; 
+                l1 = l1.next;
+            }
+            if (l2 != null){
+                sum += l2.val;
+                l2 = l2.next; 
+            }
+
+            ListNode digit = new ListNode(sum % 10);
+            carry = sum/10; 
+
+            curr.next= digit;
+            curr = curr.next; 
+        }
+
+        return head.next;
+    }
+}
+
+Code Explanation: 
+- For this problem, we are given two lists and want to add them together node by node. In order to do this, we need to create a carry variable for instances of when the sum is greater than 9. 
+- We loop through until both lists are fully traversed and the carry == 0, meaning we have no more nodes to add, and then we initialize a sum variable that will keep track of the calculated sum for this given node. We check to see if l1 is null and then append to the sum accordingly. We do the same for L2. 
+- We then create the new Node that will add, but make sure to do modulo division to ensure that we don't add a double-digit number, as this isn't technically possible
+- We need to  update carry and move on to the next node in the result list
