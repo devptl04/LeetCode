@@ -1,0 +1,61 @@
+You are part of a university admissions office and need to keep track of the kth highest test score from applicants in real-time. This helps to determine cut-off marks for interviews and admissions dynamically as new applicants submit their scores. You are tasked to implement a class that, for a given integer k, maintains a stream of test scores and continuously returns the kth highest test score after a new score has been submitted. More specifically, we are looking for the kth highest score in the sorted list of all scores.
+
+Implement the KthLargest class:
+KthLargest(int k, int[] nums) Initializes the object with the integer k and the stream of test scores nums.
+int add(int val) Adds a new test score val to the stream and returns the element representing the kth largest element in the pool of test scores so far.
+ 
+
+Example 1:
+Input:
+["KthLargest", "add", "add", "add", "add", "add"]
+[[3, [4, 5, 8, 2]], [3], [5], [10], [9], [4]]
+
+Output: [null, 4, 5, 5, 8, 8
+Explanation:
+KthLargest kthLargest = new KthLargest(3, [4, 5, 8, 2]);
+kthLargest.add(3); // return 4
+kthLargest.add(5); // return 5
+kthLargest.add(10); // return 5
+kthLargest.add(9); // return 8
+kthLargest.add(4); // return 8
+
+
+Constraints:
+0 <= nums.length <= 104
+1 <= k <= nums.length + 1
+-104 <= nums[i] <= 104
+-104 <= val <= 104
+At most 104 calls will be made to add.
+
+Code: Beats 82.37% Time Complexity: O(n log k)
+class KthLargest {
+    int k;
+    PriorityQueue<Integer> minHeap;
+    public KthLargest(int k, int[] nums) {
+        this.k = k; 
+        minHeap = new PriorityQueue<>();
+
+        for (int i: nums){
+            minHeap.add(i);
+            if (minHeap.size() > k){
+                minHeap.remove();
+            }
+        }
+    }
+    
+    public int add(int val) {
+        minHeap.add(val);
+        if (minHeap.size() > k){
+            minHeap.remove();
+        }
+
+        return minHeap.peek();
+    }
+}
+
+Code Explanation: 
+- For this problem, we want to efficiently keep track of the Xth largest value. We want to use a minHeap here instead of a maxHeap because then the efficiently retrieve the maxValue from the top of the heap
+- If we had a maxHeap then we would have elimate the other candiates for the top numbers. For instance, if we have 1,2,3,4,5 we would remove 4 and 5. But now if we added another number say 6 and we wanted to get the 3rd highest number, it should be 4, but we removed it using the maxHeap logic. In a minHeap we can keep track of all the largest values while keeping the Xth element at the front
+- So we initialize a minHeap, iterate through the array and add to the minHeap, if the size is greater than k (bc we only care about the kth largest) we remove from the top element. 
+- We apply this same logic in the add function and return 
+- This runs in (n log k) time because everytime we add an element to the minHeap we have to sort it but the minHeap as defined size of K. We iterate through every number and add it thats why we get this
