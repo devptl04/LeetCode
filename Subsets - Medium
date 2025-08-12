@@ -1,0 +1,44 @@
+Given an integer array nums of unique elements, return all possible subsets (the power set).
+The solution set must not contain duplicate subsets. Return the solution in any order.
+
+ 
+Example 1:
+Input: nums = [1,2,3]
+Output: [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+
+Example 2:
+Input: nums = [0]
+Output: [[],[0]]
+ 
+Constraints:
+1 <= nums.length <= 10
+-10 <= nums[i] <= 10
+All the numbers of nums are unique.
+
+Code: Beats 100% Time Complexity: O(n * 2^n)
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        backtrack(nums, result, new ArrayList<>(), 0);
+        return result; 
+    }
+
+
+    public void backtrack(int[] nums, List<List<Integer>> result, List<Integer> curr, int index){
+        result.add(new ArrayList<>(curr));
+
+        for (int i = index; i < nums.length; i++){
+            curr.add(nums[i]);
+            backtrack(nums, result, curr, i + 1);
+            curr.remove(curr.size() -1);
+        }
+    }
+}
+
+Code Explanation: 
+- For this problem, we want to collect ALL the possible subsets of an array. This means any given combination of that array, including an empty array. However, we don't want duplicate subsets
+- This is a permutation problem, where we initialize a new ArrayList to hold the result and one to keep track of the current subset that we are calculating
+- We pass these into a backtrack function along with an index variable (the reason we use an index variable here is bc we don't want duplicates and this ensures this) 
+- Within the backtrack function, we add curr to the result and iterate through the array using the index variable we passed in, calling recursively to this backtracking function each time
+- These calls essentially all mimic the option of selecting the current number or skipping it. Creating a whole decision tree for every possible path, which in turn gives us every possible subset
+- The time complexity for this is O(n * 2^n) because each this decision tree essentially emulates two decisions for each # in the array giving us 2^n, but then copying over the current array to the result is also an O(n) time, so each recurisve call is (n * 2^n) 
