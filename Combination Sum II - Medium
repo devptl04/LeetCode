@@ -1,0 +1,54 @@
+Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target. Each number in candidates may only be used once in the combination.
+
+Note: The solution set must not contain duplicate combinations.
+
+Example 1:
+Input: candidates = [10,1,2,7,6,1,5], target = 8
+Output: 
+[
+[1,1,6],
+[1,2,5],
+[1,7],
+[2,6]
+]
+
+Constraints:
+
+1 <= candidates.length <= 100
+1 <= candidates[i] <= 50
+1 <= target <= 30
+
+Code: Beats 77% 
+class Solution {
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(candidates);
+        backtrack(candidates, result, new ArrayList<>(), target, 0);
+        return result;
+    }
+
+    public void backtrack(int[] candidates, List<List<Integer>> result, List<Integer> curr, int target, int index){
+        if (target == 0){
+            result.add(new ArrayList<>(curr));
+            return; 
+        }
+
+        for (int i = index; i < candidates.length; i++){
+            if (i > index){
+                if (candidates[i] == candidates[i-1]) continue; 
+            }
+            if (candidates[i] > target) continue;
+            curr.add(candidates[i]);
+            backtrack(candidates, result, curr, target - candidates[i], i + 1);
+            curr.remove(curr.size() -1);
+        }
+    }
+}
+
+Code Explanation: 
+- For this problem, we want to find the combinations of elements in an array that add up to a target number, where we cannot reuse the same element, and we cannot have duplicate combinations
+- In order to ensure that we don't have duplicate combinations, we will use an index variable in our backtracking
+- And to ensure that we can properly skip over duplicate values, we need to sort the array, so we can later have a duplicate check within our backtracking function
+- We pass in the conventional params into the backtracking function and check our base case 
+- Within the for loop, we set i = index and then want to perform a duplicate check. Since we sorted the array, we know that if a number within the array has a duplicate, it will appear right next to it. We only want to process each unique number once, so if the current number we are trying to process is the same as the previous number, that means we've already calculated and processed this number once, so we can skip past it
+- Along with this, we also increment i within the recursive call because this ensures we don't process the same exact index again
